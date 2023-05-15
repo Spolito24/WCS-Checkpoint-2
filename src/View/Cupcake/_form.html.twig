@@ -18,11 +18,14 @@
     <div class="form-group">
         <label for="accessory">Accessory</label>
         <select name="accessory" id="accessory">
-            {# TODO Add accessories options here #}
-        </select>
+            <option value="" selected disabled>Choisissez un accessoire</option>
 
+            {% for accessory in accessories %}
+            <option value="{{accessory.id}}">{{accessory.name}}</option>
+            {% endfor %}
+        </select>
     </div>
     <div class="form-btn">
-    <button class="btn primary-btn">Create this cupcake</button>
+        <button class="btn primary-btn">Create this cupcake</button>
     </div>
 </form>

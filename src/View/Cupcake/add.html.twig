@@ -3,6 +3,11 @@
 {% block content %}
 <div class="main-container">
     <h1>Add a new cupcake</h1>
+    <ul>
+        {% for error in errors %}
+        <li class="bg-warning">{{error}}</li>
+        {% endfor %}
+    </ul>
     {% include 'Cupcake/_form.html.twig' %}
 </div>
 {% endblock %}

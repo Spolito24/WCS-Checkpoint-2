@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Model\AccessoryManager;
+use App\Model\CupcakeManager;
 use App\Service\Container;
 
 /**
@@ -20,12 +22,28 @@ class CupcakeController extends AbstractController
      */
     public function add()
     {
+        $accessoryManager = new AccessoryManager();
+        $accessories = $accessoryManager->selectAll();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            //TODO Add your code here to create a new cupcake
-            header('Location:/cupcake/list');
+            $cupcake = array_map('trim', $_POST);
+            $cupcakeService = new Container();
+            $cupcakeService->firstCupcakeFormFilter($cupcake);
+            $cupcakeService->secondCupcakeFormFilter($cupcake);
+            $errors = $cupcakeService->errors;
+
+            if (empty($errors)) {
+                $cupcakeManager = new CupcakeManager();
+                $cupcakeManager->addCupcake($cupcake);
+
+                header('Location:/cupcake/list');
+            } else {
+                return $this->twig->render('cupcake/add.html.twig', [
+                    'errors' => $errors,
+                    'accessories' => $accessories
+                ]);
+            }
         }
-        //TODO retrieve all accessories for the select options
-        return $this->twig->render('Cupcake/add.html.twig');
+        return $this->twig->render('Cupcake/add.html.twig', ['accessories' => $accessories]);
     }
 
     /**
@@ -38,7 +56,15 @@ class CupcakeController extends AbstractController
      */
     public function list()
     {
-        //TODO Retrieve all cupcakes
-        return $this->twig->render('Cupcake/list.html.twig');
+        $cupcakeManager = new CupcakeManager();
+        $cupcakes = $cupcakeManager->selectCupcake();
+        return $this->twig->render('Cupcake/list.html.twig', ['cupcakes' => $cupcakes]);
+    }
+
+    public function show(int $id)
+    {
+        $cupcakeManager = new CupcakeManager();
+        $cupcake = $cupcakeManager->selectOneCupcake($id);
+        return $this->twig->render('Cupcake/show.html.twig', ['cupcake' => $cupcake]);
     }
 }
